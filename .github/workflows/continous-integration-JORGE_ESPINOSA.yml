@@ -1,0 +1,34 @@
+name: continuous-integration-JORGE_ESPINOSA
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      
+      - name: Pruebas de SAST
+        run: echo "Ejecución de pruebas de SAST" 
+
+      
+      - name: Crear archivo de credenciales
+        run: |
+          echo "[credentials]" > credentials.ini
+          echo "user=${{ secrets.USERNAME }}" >> credentials.ini
+          echo "password=${{ secrets.PASSWORD }}" >> credentials.ini
+
+      
+      - name: Build docker image
+        run: docker build -t devops_ws --tag devops_ws_:$(date +%s) . 
+      
+      
+      - name: Upload credentials
+        uses: actions/upload-artifact@v4
+        with:
+          name: credentials-file
+          path: credentials.ini
